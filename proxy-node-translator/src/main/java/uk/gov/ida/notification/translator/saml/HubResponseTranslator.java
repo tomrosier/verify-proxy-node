@@ -1,6 +1,7 @@
 package uk.gov.ida.notification.translator.saml;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.StatusCode;
 import se.litsec.eidas.opensaml.common.EidasConstants;
@@ -17,7 +18,6 @@ import uk.gov.ida.notification.saml.EidasAssertionBuilder;
 import uk.gov.ida.notification.saml.EidasAttributeBuilder;
 import uk.gov.ida.notification.saml.EidasResponseBuilder;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -60,7 +60,7 @@ public class HubResponseTranslator {
 
         eidasAttributeBuilders.add(new EidasAttributeBuilder(
                 AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_NAME, AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_FRIENDLY_NAME, DateOfBirthType.TYPE_NAME,
-                hubResponseContainer.getAttributes().getDateOfBirth().getValue().format(DateTimeFormatter.ofPattern("YYYY-MM-dd"))
+                hubResponseContainer.getAttributes().getDateOfBirth().getValue().toString(DateTimeFormat.forPattern("YYYY-MM-dd"))
         ));
 
         eidasAttributeBuilders.add(new EidasAttributeBuilder(AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_NAME, AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_FRIENDLY_NAME, PersonIdentifierType.TYPE_NAME,
