@@ -1,6 +1,7 @@
 package uk.gov.ida.notification.eidassaml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import engineering.reliability.gds.metrics.config.PrometheusConfiguration;
 import io.dropwizard.Configuration;
 import uk.gov.ida.notification.configuration.ReplayCheckerConfiguration;
 import uk.gov.ida.saml.metadata.TrustStoreBackedMetadataConfiguration;
@@ -9,7 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 
-public class EidasSamlParserConfiguration extends Configuration {
+public class EidasSamlParserConfiguration extends Configuration implements PrometheusConfiguration {
 
     @JsonProperty
     @Valid
@@ -25,6 +26,9 @@ public class EidasSamlParserConfiguration extends Configuration {
     @NotNull
     private TrustStoreBackedMetadataConfiguration connectorMetadataConfiguration;
 
+    @JsonProperty
+    private boolean prometheusEnabled;
+
     public ReplayCheckerConfiguration getReplayChecker() {
         return replayChecker;
     }
@@ -35,5 +39,10 @@ public class EidasSamlParserConfiguration extends Configuration {
 
     public URI getProxyNodeAuthnRequestUrl() {
         return proxyNodeAuthnRequestUrl;
+    }
+
+    @Override
+    public boolean isPrometheusEnabled() {
+        return prometheusEnabled;
     }
 }

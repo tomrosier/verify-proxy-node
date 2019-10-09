@@ -1,5 +1,6 @@
 package uk.gov.ida.notification.eidassaml;
 
+import io.prometheus.client.Counter;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
@@ -28,6 +29,12 @@ import java.util.stream.Collectors;
 @Path(Urls.EidasSamlParserUrls.EIDAS_AUTHN_REQUEST_PATH)
 @Produces(MediaType.APPLICATION_JSON)
 public class EidasSamlResource {
+
+    private static final Counter SUCCESSFUL_REQUESTS = Counter.build(
+            "verify_proxy_node_requests",
+            "Total number of successful Verify Proxy Node Requests")
+            .labelNames("issuer")
+            .register();
 
     private EidasAuthnRequestValidator eidasAuthnRequestValidator;
     private SamlRequestSignatureValidator<AuthnRequest> samlRequestSignatureValidator;
@@ -61,6 +68,7 @@ public class EidasSamlResource {
         ProxyNodeLogger.addContext(ProxyNodeMDCKey.EIDAS_ISSUE_INSTANT, authnRequest.getIssueInstant().toString());
         ProxyNodeLogger.addContext(ProxyNodeMDCKey.EIDAS_LOA, getLevelsOfAssurance(authnRequest));
         ProxyNodeLogger.info("Authn request validated by ESP");
+        SUCCESSFUL_REQUESTS.labels(authnRequest.getIssuer().getValue()).inc();
 
         return new EidasSamlParserResponse(
                 authnRequest.getID(),

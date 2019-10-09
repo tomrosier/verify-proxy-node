@@ -2,6 +2,7 @@ package uk.gov.ida.notification.resources;
 
 import io.dropwizard.jersey.sessions.Session;
 import io.dropwizard.views.View;
+import io.prometheus.client.Counter;
 import uk.gov.ida.notification.SamlFormViewBuilder;
 import uk.gov.ida.notification.contracts.HubResponseTranslatorRequest;
 import uk.gov.ida.notification.proxy.TranslatorProxy;
@@ -12,6 +13,7 @@ import uk.gov.ida.notification.shared.logging.IngressEgressLogging;
 import uk.gov.ida.notification.shared.logging.ProxyNodeLogger;
 import uk.gov.ida.notification.shared.Urls;
 import uk.gov.ida.notification.validations.ValidBase64Xml;
+import uk.gov.ida.notification.views.SamlFormView;
 
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
@@ -27,6 +29,12 @@ public class HubResponseResource {
 
     static final String LEVEL_OF_ASSURANCE = "LEVEL_2";
     static final String SUBMIT_TEXT = "Post eIDAS Response SAML to Connector Node";
+
+    private static final Counter SUCCESSFUL_RESPONSES = Counter.build(
+            "verify_proxy_node_successful_responses",
+            "Total number of successful Verify Proxy Node Responses")
+            .labelNames("destination")
+            .register();
 
     private final SamlFormViewBuilder samlFormViewBuilder;
     private final TranslatorProxy translatorProxy;
@@ -65,11 +73,13 @@ public class HubResponseResource {
         String eidasResponse = translatorProxy.getTranslatedHubResponse(translatorRequest, session.getId());
         ProxyNodeLogger.info("Received eIDAS response from Translator");
 
-        return samlFormViewBuilder.buildResponse(
-            sessionData.getEidasDestination(),
-            eidasResponse,
-            SUBMIT_TEXT,
-            sessionData.getEidasRelayState()
+        SamlFormView samlFormView = samlFormViewBuilder.buildResponse(
+                sessionData.getEidasDestination(),
+                eidasResponse,
+                SUBMIT_TEXT,
+                sessionData.getEidasRelayState()
         );
+        SUCCESSFUL_RESPONSES.labels(sessionData.getEidasDestination()).inc();
+        return samlFormView;
     }
 }

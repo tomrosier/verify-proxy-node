@@ -39,3 +39,5 @@ credentialConfiguration:
   privateKey:
     type: ${KEY_TYPES:-encoded}
     key: ${SIGNING_KEY}
+
+prometheusEnabled: ${PROMETHEUS_ENABLED:-true}

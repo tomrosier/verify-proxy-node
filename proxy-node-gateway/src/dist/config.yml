@@ -48,3 +48,5 @@ redisService:
   url: ${REDIS_SERVER_URI}
 
 errorPageRedirectUrl: ${PROXY_NODE_ERROR_PAGE_URI}
+
+prometheusEnabled: ${PROMETHEUS_ENABLED:-true}

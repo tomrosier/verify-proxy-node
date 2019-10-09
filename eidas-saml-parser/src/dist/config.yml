@@ -30,3 +30,5 @@ replayChecker:
   redisUrl: ${REDIS_SERVER_URI:-https://DefaultNotUsed}
 
 proxyNodeAuthnRequestUrl: ${PROXY_NODE_AUTHN_REQUEST_ENDPOINT:-DefaultNotUsed}
+
+prometheusEnabled: ${PROMETHEUS_ENABLED:-true}
